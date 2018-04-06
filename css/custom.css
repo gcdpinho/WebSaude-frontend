@@ -1,0 +1,29 @@
+#cadastro {
+    padding: 50px 0;
+}
+
+.demais {
+    margin: 0;
+}
+
+.demais .col-md-10 {
+    padding: 0;
+}
+
+.demais,
+.doenca {
+    display: none;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.v-center {
+    display: flex;
+    align-items: center;
+}
+
+.buttons {
+    margin-top: 12px;
+}

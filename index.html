@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>WebSaúde | Cadastros</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="img/icon.png">
+</head>
+
+<body>
+    <section id="cadastro">
+        <div class="container">
+            <form id="formCadastro">
+                <div class="bloco">
+                    <div class="row v-center">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label>Selecione a tabela que deseja inserir:</label>
+                                <select class="form-control tabela">
+                                    <option value="" disabled selected>Selecione uma opção</option>
+                                    <option value="doenca">Doenças</option>
+                                    <option value="cor">Cor</option>
+                                    <option value="lesaoFundamental">Lesao Fundamental</option>
+                                    <option value="superficie">Superficie</option>
+                                    <option value="palpacao">Palpação</option>
+                                    <option value="evolucao">Evolução</option>
+                                    <option value="crescimento">Crescimento</option>
+                                    <option value="localizacao">Localização</option>
+                                    <option value="trauma">Trauma</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 buttons">
+                            <button type="button" class="btn btn-success" onclick="add(this);">+</button>
+                            <button type="button" class="btn btn-danger" onclick="remove(this)">-</button>
+                        </div>
+                    </div>
+                    <div class="row demais">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label>Nome:</label>
+                                <input type="text" class="form-control nome">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row doenca">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Tipo:</label>
+                                <input type="text" class="form-control tipo">
+                            </div>
+                            <div class="form-group">
+                                <label>Inserção:</label>
+                                <input type="text" class="form-control insercao">
+                            </div>
+                            <div class="form-group">
+                                <label>Começo:</label>
+                                <select class="form-control comeco">
+                                    <option value="" disabled selected>Selecione uma opção</option>
+                                    <option value="0">Insidioso</option>
+                                    <option value="1">Súbito</option>
+                                    <option value="2">Súbito e Insidioso</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fumo:</label>
+                                <select class="form-control flgFumo">
+                                    <option value="" disabled selected>Selecione uma opção</option>
+                                    <option value="false">Não</option>
+                                    <option value="true">Sim</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Nome:</label>
+                                <input type="text" class="form-control nome">
+                            </div>
+                            <div class="form-group">
+                                <label>Dor:</label>
+                                <select class="form-control dor">
+                                    <option value="" disabled selected>Selecione uma opção</option>
+                                    <option value="0">Não</option>
+                                    <option value="1">Sim</option>
+                                    <option value="2">Sim e Não</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Pode ser removida:</label>
+                                <select class="form-control flgRemovida">
+                                    <option value="" disabled selected>Selecione uma opção</option>
+                                    <option value="false">Não</option>
+                                    <option value="true">Sim</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Álcool:</label>
+                                <select class="form-control flgAlcool">
+                                    <option value="" disabled selected>Selecione uma opção</option>
+                                    <option value="false">Não</option>
+                                    <option value="true">Sim</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
