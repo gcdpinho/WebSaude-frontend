@@ -1,6 +1,6 @@
 jQuery(function ($) {
     'use strict';
-
+    showTables();
     $('.tabela').change(function () {
         var tabela = $(this).find(':selected').val();
         if (tabela != "doenca") {
@@ -26,4 +26,23 @@ var add = function (e) {
 
 var remove = function (e) {
     $(e).parents('.bloco').remove();
+}
+
+var showTables = function () {
+    $.ajax({
+        type: "GET",
+        url: backend.url + "utility/showTables",
+        success: function (response) {
+            var options = [];
+            options.push('<option value="" disabled selected>Selecione uma opção</option>');
+            for (var element of response)
+                if (!(element.Tables_in_u709009684_wsaud.indexOf('doenca') >= 0 && element.Tables_in_u709009684_wsaud != "doenca"))
+                    options.push("<option>" + element.Tables_in_u709009684_wsaud + "</option>");
+            $('.tabela').html(options);
+            $('.page-loader-wrapper').fadeOut();
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
 }
