@@ -24,10 +24,15 @@
     align-items: center;
 }
 
-.buttons {
+.buttons, .buttonsAttr {
     margin-top: 12px;
 }
 
+.buttonsAttr .btn-danger, .ins .btn-danger{
+    margin-left: 3px;
+}
+
+/* LOADER */
 .page-loader-wrapper {
     display: block;
     z-index: 99999999;
