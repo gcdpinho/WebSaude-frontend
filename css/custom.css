@@ -553,3 +553,8 @@
         transform: rotate(-130deg);
     }
 }
+
+.error{
+    color: red;
+    border-color: red;
+}

@@ -10,13 +10,13 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/animate.min.css" rel="stylesheet">
+    <link href="plugins/bootstrap-selector/bootstrap-select.css" rel="stylesheet">
     <link href="css/custom.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="img/icon.png">
 </head>
 
 <body>
-
     <div class="page-loader-wrapper">
         <div class="loader">
             <div class="preloader">
@@ -36,27 +36,32 @@
     <section id="cadastro">
         <div class="container">
             <form id="formCadastro">
-                <div class="bloco">
-                    <div class="row v-center">
-                        <div class="col-md-10">
-                            <div class="form-group">
-                                <label>Selecione a tabela que deseja inserir:</label>
-                                <select class="form-control tabela">
-                                </select>
+                <div class="formContent">
+                    <div class="bloco">
+                        <div class="row v-center">
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <label>Selecione a tabela que deseja inserir:</label>
+                                    <select class="form-control tabela">
+                                    </select>
+                                </div>
+
                             </div>
-                        </div>
-                        <div class="col-md-2 buttons">
-                            <button type="button" class="btn btn-success" onclick="add(this);">+</button>
-                            <button type="button" class="btn btn-danger" onclick="remove(this)">-</button>
+                            <div class="col-md-2 buttons">
+                                <button type="button" class="btn btn-success" onclick="add(this);">+</button>
+                                <button type="button" class="btn btn-danger" onclick="remove(this)">-</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <button type="submit" class="btn btn-success">SALVAR</button>
             </form>
         </div>
     </section>
 
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="plugins/bootstrap-selector/bootstrap-select.js"></script>
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>
 </body>
