@@ -7,25 +7,12 @@ jQuery(function ($) {
 
     $('#formCadastro').submit(function (e) {
         if (validation()) {
-            var data = generateQueries();
-            $('.page-loader-wrapper').fadeIn();
-            $.ajax({
-                type: "POST",
-                url: backend.url + "utility/insertAll",
-                data: {
-                    data: data
-                },
-                success: function (response) {
-                    console.log(response);
-                    $('.page-loader-wrapper').fadeOut();
-                },
-                error: function (error) {
-                    console.log(error.message);
-                    $('.page-loader-wrapper').fadeOut();
-                }
-            });
-            e.preventDefault();
+
         }
+        else{
+            console.log(localStorage.getItem('msgErro'))
+        }
+        e.preventDefault();
     });
 });
 
@@ -37,6 +24,23 @@ var validation = function () {
         if ($(element).find(':selected').val() == "") {
             valid = false;
             $(element).addClass('error');
+        } else {
+            var atributos;
+            if ($(element).find(':selected').val() == "doenca")
+                atributos = $(element).parents('.bloco').find('.rowAttr .attrDoenca');
+            else
+                atributos = $(element).parents('.bloco').find('.rowAttr .attr');
+            var flgNome = false;
+            for (var i = 0; i < atributos.length; i++) {
+                if ($(atributos[i]).find(':selected').val() == "nome") {
+                    flgNome = true;
+                    break;
+                }
+            }
+            if (!flgNome) {
+                localStorage.setItem('msgErro', "A tabela " + acentuacao($(element).find(':selected').val()) + " deve conter o campo nome");
+                valid = false;
+            }
         }
     });
 
@@ -50,14 +54,16 @@ var validation = function () {
 
     /* Inputs vazios que não permitem valores nulos*/
     $('input.valueAttr').each(function (e, element) {
-        if ($(element).val() == "" && $(element).parents('.rowAttr').find('select.attr').find(':selected').attr('name') == "NO") {
+        if ($(element).val() == "" && ($(element).parents('.rowAttr').find('select.attr').find(':selected').attr('name') == "NO" || $(element).parents('.rowAttr').find('select.attrDoenca').find(':selected').attr('name') == "NO")) {
             valid = false;
             $(element).addClass('error');
         }
     });
 
+
     return valid;
 }
+
 
 var generateQueries = function () {
     var data = [];
@@ -102,14 +108,18 @@ var addAttr = function (is) {
     appendAttr($(is).parents('.bloco'));
 }
 
+var addDoenca = function (is) {
+    appendDoenca($(is).parents('.bloco'));
+}
+
 var remove = function (e) {
     if ($('.bloco').length > 1)
         $(e).parents('.bloco').remove();
 }
 
 var removeAttr = function (e) {
-    if ($(e).parents('.bloco').find('.attr').length > 1)
-        $(e).parents('.row.v-center').remove();
+    if ($(e).parents('.bloco').find('.rowAttr').length > 1)
+        $(e).parents('.rowAttr').remove();
 }
 
 var optGlobal = [];
@@ -157,7 +167,7 @@ var acentuacao = function (table) {
             return "Tipo";
         case "insercao":
             return "Inserção";
-        case "dor":
+        case "flgDor":
             return "Dor";
         case "comeco":
             return "Começo";
@@ -246,7 +256,7 @@ var appendDoenca = function (bloco) {
         '</div>' +
         '</div>' +
         '<div class="col-md-2 buttonsAttr">' +
-        '<button type="button" class="btn btn-success" onclick="addAttr(this)">+</button>' +
+        '<button type="button" class="btn btn-success" onclick="addDoenca(this)">+</button>' +
         '<button type="button" class="btn btn-danger" onclick="removeAttr(this)">-</button>' +
         '</div>' +
         '</div>');
@@ -255,61 +265,44 @@ var appendDoenca = function (bloco) {
     $('select.attrDoenca').change(function () {
         var value = $(this).find(":selected").val();
         if (value != "nome" && value != "tipo") {
+            console.log('oi');
             $(this).parents('.row').find('.valueAttr').remove();
-            if (value == "insercao") {
+            if (value == "flgDor") {
                 $(this).parents('.row').find('div.value').append('<select class="form-control valueAttr selectpicker" title="Selecione uma opção" multiple>' +
                     '</select>');
-                $(this).parents('.row').find('select.valueAttr').append('<option value="0">Sésil</option>' +
-                    '<option value="1">Pediculada</option>'
+                $(this).parents('.row').find('select.valueAttr').append('<option value="true">Sim</option>' +
+                    '<option value="false">Não</option>'
                 );
-            } else if (value == "dor") {
+            } else if (value == "flgRemovida") {
                 $(this).parents('.row').find('div.value').append('<select class="form-control valueAttr selectpicker" title="Selecione uma opção" multiple>' +
                     '</select>');
-                $(this).parents('.row').find('select.valueAttr').append('<option value="0">Sim</option>' +
-                    '<option value="1">Não</option>'
+                $(this).parents('.row').find('select.valueAttr').append('<option value="true">Sim</option>' +
+                    '<option value="false">Não</option>'
                 );
-            } else if (value == "comeco") {
+            } else if (value == "flgFumo") {
                 $(this).parents('.row').find('div.value').append('<select class="form-control valueAttr selectpicker" title="Selecione uma opção" multiple>' +
                     '</select>');
-                $(this).parents('.row').find('select.valueAttr').append('<option value="0">Súbito</option>' +
-                    '<option value="1">Insidioso</option>'
+                $(this).parents('.row').find('select.valueAttr').append('<option value="true">Sim</option>' +
+                    '<option value="false">Não</option>'
                 );
-            } else if (value == "trauma"){
+            } else if (value == "flgAlcool") {
                 $(this).parents('.row').find('div.value').append('<select class="form-control valueAttr selectpicker" title="Selecione uma opção" multiple>' +
-                '</select>');
-                $(this).parents('.row').find('select.valueAttr').append('<option value="0">Sim</option>' +
-                    '<option value="1">Não</option>'
-                );
-            }
-            else if (value == "flgRemovida"){
-                $(this).parents('.row').find('div.value').append('<select class="form-control valueAttr selectpicker" title="Selecione uma opção">' +
-                '</select>');
+                    '</select>');
                 $(this).parents('.row').find('select.valueAttr').append('<option value="true">Sim</option>' +
                     '<option value="false">Não</option>'
                 );
             }
-            else if (value == "flgFumo"){
-                $(this).parents('.row').find('div.value').append('<select class="form-control valueAttr selectpicker" title="Selecione uma opção">' +
-                '</select>');
-                $(this).parents('.row').find('select.valueAttr').append('<option value="true">Sim</option>' +
-                    '<option value="false">Não</option>'
-                );
-            }
-            else if (value == "flgAlcool"){
-                $(this).parents('.row').find('div.value').append('<select class="form-control valueAttr selectpicker" title="Selecione uma opção">' +
-                '</select>');
-                $(this).parents('.row').find('select.valueAttr').append('<option value="true">Sim</option>' +
-                    '<option value="false">Não</option>'
-                );
-            }
-
             $(this).parents('.row').find('select.valueAttr').selectpicker();
-        } else{
+        } else {
             $(this).parents('.row').find('.valueAttr').remove();
             $(this).parents('.row').find('div.value').append('<input type="text" class="form-control valueAttr" disabled>');
             $(this).parents('.row').find('input').attr('disabled', false);
+            $('input.valueAttr').on('input', function (e) {
+                $(this).removeClass('error');
+            });
         }
     });
+
     $('.page-loader-wrapper').fadeOut();
 }
 
