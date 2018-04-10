@@ -1,0 +1,7 @@
+validação de tabelas iguais;
+validação quando não tem tabela doença;
+alert para erros - DONE;
+alert para erros de sql - DONE;
+confirmação salvar - DONE;
+
+- multiplos insertes de doença, quando o selector tiver mais de um valor;

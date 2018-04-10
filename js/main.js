@@ -6,11 +6,15 @@ jQuery(function ($) {
     $('.tabela').change(changeTabela);
 
     $('#formCadastro').submit(function (e) {
-        if (validation()) {
-
-        }
-        else{
-            console.log(localStorage.getItem('msgErro'))
+        if (validation())
+            $('#cadastroModal').modal('show');
+        else {
+            var msgErro = localStorage.getItem('msgErro');
+            if (msgErro != "")
+                $('#errorModal').find('.modal-body').html("Você pode possuir campos não preenchidos, grifados de vermelho. Além disso, existem alguns erros que estão impedindo o cadastro da doença:<br>"+msgErro);
+            else
+                $('#errorModal').find('.modal-body').html("Você possui campos não preenchidos, grifados de vermelho!");
+            $('#errorModal').modal('show');
         }
         e.preventDefault();
     });
@@ -18,18 +22,27 @@ jQuery(function ($) {
 
 var validation = function () {
     var valid = true;
-
+    localStorage.setItem("msgErro", "");
     /* Selects de tabelas que não possuem uma opção selecionada*/
     $('select.tabela').each(function (e, element) {
         if ($(element).find(':selected').val() == "") {
             valid = false;
             $(element).addClass('error');
         } else {
+            /* Tabelas sem atributo nome + atributos repetidos*/
             var atributos;
-            if ($(element).find(':selected').val() == "doenca")
+            var rep = [];
+            if ($(element).find(':selected').val() == "doenca") {
                 atributos = $(element).parents('.bloco').find('.rowAttr .attrDoenca');
-            else
+                $(this).parents('.bloco').find('select.attrDoenca').each(function (e, element) {
+                    rep.push($(element).find(':selected').val());
+                });
+            } else {
                 atributos = $(element).parents('.bloco').find('.rowAttr .attr');
+                $(this).parents('.bloco').find('select.attr').each(function (e, element) {
+                    rep.push($(element).find(':selected').val());
+                });
+            }
             var flgNome = false;
             for (var i = 0; i < atributos.length; i++) {
                 if ($(atributos[i]).find(':selected').val() == "nome") {
@@ -38,7 +51,11 @@ var validation = function () {
                 }
             }
             if (!flgNome) {
-                localStorage.setItem('msgErro', "A tabela " + acentuacao($(element).find(':selected').val()) + " deve conter o campo nome");
+                localStorage.setItem('msgErro', localStorage.getItem('msgErro') + "<br>- A tabela " + acentuacao($(element).find(':selected').val()) + " deve conter o campo nome");
+                valid = false;
+            }
+            if (hasDuplicates(rep)) {
+                localStorage.setItem("msgErro", localStorage.getItem('msgErro') + "<br>- Há atributos iguais para a tabela " + acentuacao($(element).find(':selected').val()))
                 valid = false;
             }
         }
@@ -52,6 +69,22 @@ var validation = function () {
         }
     });
 
+    /* Selects de atributos que não possuem uma opção selecionada*/
+    $('select.attrDoenca').each(function (e, element) {
+        if ($(element).find(':selected').val() == "") {
+            valid = false;
+            $(element).addClass('error');
+        }
+    });
+
+    /* Selects de valores vazios */
+    $('select.valueAttr').each(function (e, element) {
+        if ($(element).val() == null) {
+            $(element).parents('div.valueAttr').find('button').addClass('error');
+            valid = false;
+        }
+    });
+
     /* Inputs vazios que não permitem valores nulos*/
     $('input.valueAttr').each(function (e, element) {
         if ($(element).val() == "" && ($(element).parents('.rowAttr').find('select.attr').find(':selected').attr('name') == "NO" || $(element).parents('.rowAttr').find('select.attrDoenca').find(':selected').attr('name') == "NO")) {
@@ -60,27 +93,128 @@ var validation = function () {
         }
     });
 
-
     return valid;
 }
 
+var hasDuplicates = function (array) {
+    return (new Set(array)).size !== array.length;
+}
 
-var generateQueries = function () {
-    var data = [];
-    var row;
-    var atributos;
-    var tabelas = $('select.tabela').find(':selected');
+
+// var generateQueries = function () {
+//     var data = [];
+//     var row;
+//     var atributos;
+//     var tabelas = $('select.tabela').find(':selected');
+//     for (var i = 0; i < tabelas.length; i++) {
+//         row = {};
+//         row['tabela'] = $(tabelas[i]).val();
+//         atributos = $(tabelas[i]).parents('.bloco').find('.rowAttr');
+//         row['atributos'] = {};
+//         for (var j = 0; j < atributos.length; j++)
+//             row['atributos'][$(atributos[j]).find('select.attr option:selected').val()] = $(atributos[j]).find('input.valueAttr').val();
+//         data.push(row);
+//     }
+//     console.log(data);
+//     return data;
+// }
+
+var cadatroDoenca = function () {
+    $('.page-loader-wrapper').fadeIn();
+    var tabelas = $('.tabela');
     for (var i = 0; i < tabelas.length; i++) {
-        row = {};
-        row['tabela'] = $(tabelas[i]).val();
-        atributos = $(tabelas[i]).parents('.bloco').find('.rowAttr');
-        row['atributos'] = {};
-        for (var j = 0; j < atributos.length; j++)
-            row['atributos'][$(atributos[j]).find('select.attr option:selected').val()] = $(atributos[j]).find('input.valueAttr').val();
-        data.push(row);
+        if ($(tabelas[i]).find(":selected").val() == "doenca") {
+            var atributos = [];
+            $(tabelas[i]).parents('.bloco').find('select.attrDoenca').each(function (e, element) {
+                atributos.push($(element).find(':selected').val());
+            });
+            var values = [];
+            $(tabelas[i]).parents('.bloco').find('.valueAttr').each(function (e, element) {
+                if ($(element).val() != "") {
+                    if (typeof $(element).val() == "object")
+                        values.push({
+                            type: 'boolean',
+                            value: $(element).val()[0]
+                        });
+                    else
+                        values.push({
+                            type: 'string',
+                            value: $(element).val()
+                        });
+                }
+            });
+            $.ajax({
+                type: "POST",
+                url: backend.url + "utility/insertDoenca",
+                data: {
+                    atributos: atributos,
+                    values: values
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.insertId)
+                        cadastroRelacionamento(response.insertId);
+                    else {
+                        $('#errorModal').find('.modal-body').html("Essa doença já foi cadastrada!");
+                        $('.page-loader-wrapper').fadeOut();
+                        $('#errorModal').modal('show');
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('#errorModal').find('.modal-body').html("Error ao inserir doença. Contate o desenvolvedor!");
+                    $('.page-loader-wrapper').fadeOut();
+                    $('#errorModal').modal('show');
+                }
+            });
+            break;
+        }
     }
-    console.log(data);
-    return data;
+}
+
+var cleanAll = function(){
+    $('.bloco').remove();
+    add();
+}
+
+var cadastroRelacionamento = function (idDoenca) {
+    var insercao = [];
+    var tabelas = $('.tabela');
+    for (var i = 0; i < tabelas.length; i++) {
+        if ($(tabelas[i]).find(":selected").val() != "doenca") {
+            $(tabelas[i]).parents('.bloco').find('.valueAttr').each(function (e, element) {
+                if ($(element).val() != "") {
+                    if (typeof $(element).val() == "object") {
+                        insercao.push({
+                            tabela: $(tabelas[i]).find(":selected").val(),
+                            idDoenca: idDoenca,
+                            id: $(element).val()[0]
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    $.ajax({
+        type: "POST",
+        url: backend.url + "utility/insertRelacionamentos",
+        data: {
+            data: insercao
+        },
+        success: function (response) {
+            console.log(response);
+            cleanAll();
+            showNotification("Doença cadastrada com sucesso!", "success");
+            $('.page-loader-wrapper').fadeOut();
+        },
+        error: function (error) {
+            console.log(error);
+            $('#errorModal').find('.modal-body').html("Error ao inserir doença - relacionamentos. Contate o desenvolvedor!");
+            $('.page-loader-wrapper').fadeOut();
+            $('#errorModal').modal('show');
+        }
+    });
 }
 
 var add = function (e) {
@@ -136,7 +270,9 @@ var showTables = function () {
             $('.page-loader-wrapper').fadeOut();
         },
         error: function (error) {
-            console.log(error);
+            $('#errorModal').find('.modal-body').html("Error ao carregar as tabelas. Contate o desenvolvedor!");
+            $('.page-loader-wrapper').fadeOut();
+            $('#errorModal').modal('show');
         }
     });
 }
@@ -221,16 +357,21 @@ var appendAttr = function (bloco) {
             success: function (response) {
                 console.log(response);
                 $(is).parents('.row').find('select.valueAttr').append(response.map((e) => {
-                    return "<option val='" + e.id + "'>" + e.nome + "</option>"
+                    return "<option value='" + e.id + "'>" + e.nome + "</option>"
                 }));
                 $(is).parents('.row').find('select.aux').remove();
                 $(is).parents('.row').find('.valueAttr').attr('disabled', false);
                 $(is).parents('.row').find('.selectpicker').selectpicker();
+                $('.selectpicker').on('change', function () {
+                    $(this).parents('div.valueAttr').find('button').removeClass('error');
+                });
                 $('.page-loader-wrapper').fadeOut();
             },
             error: function (error) {
                 console.log(error);
+                $('#errorModal').find('.modal-body').html("Error ao carregar os valores dos atributos. Contate o desenvolvedor!");
                 $('.page-loader-wrapper').fadeOut();
+                $('#errorModal').modal('show');
             }
         });
     });
@@ -264,8 +405,8 @@ var appendDoenca = function (bloco) {
     $(aux[aux.length - 1]).append(optionsAttr);
     $('select.attrDoenca').change(function () {
         var value = $(this).find(":selected").val();
+        $(this).removeClass('error');
         if (value != "nome" && value != "tipo") {
-            console.log('oi');
             $(this).parents('.row').find('.valueAttr').remove();
             if (value == "flgDor") {
                 $(this).parents('.row').find('div.value').append('<select class="form-control valueAttr selectpicker" title="Selecione uma opção" multiple>' +
@@ -293,6 +434,9 @@ var appendDoenca = function (bloco) {
                 );
             }
             $(this).parents('.row').find('select.valueAttr').selectpicker();
+            $('.selectpicker').on('change', function () {
+                $(this).parents('div.valueAttr').find('button').removeClass('error');
+            });
         } else {
             $(this).parents('.row').find('.valueAttr').remove();
             $(this).parents('.row').find('div.value').append('<input type="text" class="form-control valueAttr" disabled>');
@@ -331,7 +475,42 @@ var changeTabela = function () {
                 appendDoenca($(is).parents('.bloco'));
         },
         error: function (error) {
-            console.log(error);
+            $('#errorModal').find('.modal-body').html("Error ao carregar os atributos. Contate o desenvolvedor!");
+            $('.page-loader-wrapper').fadeOut();
+            $('#errorModal').modal('show');
         }
+    });
+}
+
+var showNotification = function (text, state) {
+    var color = "bg-green";
+    if (state == "error")
+        color = "bg-red";
+
+    $.notify({
+        message: text
+    }, {
+        type: color,
+        allow_dismiss: true,
+        newest_on_top: true,
+        timer: 1000,
+        placement: {
+            from: "top",
+            align: "center"
+        },
+        animate: {
+            enter: "animated fadeInDown",
+            exit: "animated fadeOutUp"
+        },
+        template: '<div data-notify="container" class="bootstrap-notify-container alert alert-dismissible {0} ' + (true ? "p-r-35" : "") + '" role="alert">' +
+            '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+            '<span data-notify="icon"></span> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
     });
 }

@@ -11,6 +11,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/animate.min.css" rel="stylesheet">
     <link href="plugins/bootstrap-selector/bootstrap-select.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
     <link href="css/custom.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="img/icon.png">
@@ -58,10 +59,44 @@
             </form>
         </div>
     </section>
+    <div class="modal fade" id="cadastroModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="cadastroModalLabel">Atenção</h4>
+                </div>
+                <div class="modal-body">
+                    Você tem certeza que deseja concluir o cadastro?
+                </div>
+                <div id="modalId"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn waves-effect btn-danger" data-dismiss="modal">NÃO</button>
+                    <button type="button" class="btn waves-effect btn-success" onclick="cadatroDoenca()" data-dismiss="modal">SIM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="errorModalLabel">Atenção</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div id="modalId"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn waves-effect btn-success" data-dismiss="modal">Ok, entendi</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="plugins/bootstrap-selector/bootstrap-select.js"></script>
+    <script src="plugins/bootstrap-notify/bootstrap-notify.js"></script>
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>
 </body>
