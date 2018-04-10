@@ -24,6 +24,8 @@ var validation = function () {
     var valid = true;
     localStorage.setItem("msgErro", "");
     /* Selects de tabelas que não possuem uma opção selecionada*/
+    var tabsRep = [];
+    var flgDoenca = false;
     $('select.tabela').each(function (e, element) {
         if ($(element).find(':selected').val() == "") {
             valid = false;
@@ -33,6 +35,7 @@ var validation = function () {
             var atributos;
             var rep = [];
             if ($(element).find(':selected').val() == "doenca") {
+                flgDoenca = true;
                 atributos = $(element).parents('.bloco').find('.rowAttr .attrDoenca');
                 $(this).parents('.bloco').find('select.attrDoenca').each(function (e, element) {
                     rep.push($(element).find(':selected').val());
@@ -58,8 +61,20 @@ var validation = function () {
                 localStorage.setItem("msgErro", localStorage.getItem('msgErro') + "<br>- Há atributos iguais para a tabela " + acentuacao($(element).find(':selected').val()))
                 valid = false;
             }
+
+            tabsRep.push($(element).find(':selected').val());
         }
     });
+
+    if (hasDuplicates(tabsRep)) {
+        localStorage.setItem("msgErro", localStorage.getItem('msgErro') + "<br>- Há tabelas iguais");
+        valid = false;
+    }
+
+    if (!flgDoenca){
+        localStorage.setItem("msgErro", localStorage.getItem('msgErro') + "<br>- Não há tabela doença no cadastro");
+        valid = false;
+    }
 
     /* Selects de atributos que não possuem uma opção selecionada*/
     $('select.attr').each(function (e, element) {

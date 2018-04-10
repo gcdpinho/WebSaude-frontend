@@ -1,4 +1,4 @@
-validação de tabelas iguais;
+validação de tabelas iguais - DONE;
 validação quando não tem tabela doença;
 alert para erros - DONE;
 alert para erros de sql - DONE;
