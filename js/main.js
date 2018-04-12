@@ -203,7 +203,7 @@ var cadastroRelacionamento = function (idDoenca) {
                         insercao.push({
                             tabela: $(tabelas[i]).find(":selected").val(),
                             idDoenca: idDoenca,
-                            id: $(element).val()[0]
+                            id: $(element).val()
                         });
                     }
                 }
