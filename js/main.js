@@ -11,7 +11,7 @@ jQuery(function ($) {
         else {
             var msgErro = localStorage.getItem('msgErro');
             if (msgErro != "")
-                $('#errorModal').find('.modal-body').html("Você pode possuir campos não preenchidos, grifados de vermelho. Além disso, existem alguns erros que estão impedindo o cadastro da doença:<br>"+msgErro);
+                $('#errorModal').find('.modal-body').html("Você pode possuir campos não preenchidos, grifados de vermelho. Além disso, existem alguns erros que estão impedindo o cadastro da doença:<br>" + msgErro);
             else
                 $('#errorModal').find('.modal-body').html("Você possui campos não preenchidos, grifados de vermelho!");
             $('#errorModal').modal('show');
@@ -71,7 +71,7 @@ var validation = function () {
         valid = false;
     }
 
-    if (!flgDoenca){
+    if (!flgDoenca) {
         localStorage.setItem("msgErro", localStorage.getItem('msgErro') + "<br>- Não há tabela doença no cadastro");
         valid = false;
     }
@@ -158,12 +158,12 @@ var cadatroDoenca = function () {
                         });
                 }
             });
+
             $.ajax({
                 type: "POST",
-                url: backend.url + "utility/insertDoenca",
+                url: backend.url + "utility/insertByQuery",
                 data: {
-                    atributos: atributos,
-                    values: values
+                    query: buildQueryDoenca(atributos, values)
                 },
                 success: function (response) {
                     console.log(response);
@@ -182,12 +182,13 @@ var cadatroDoenca = function () {
                     $('#errorModal').modal('show');
                 }
             });
+
             break;
         }
     }
 }
 
-var cleanAll = function(){
+var cleanAll = function () {
     $('.bloco').remove();
     add();
 }
@@ -210,26 +211,33 @@ var cadastroRelacionamento = function (idDoenca) {
             });
         }
     }
-
-    $.ajax({
-        type: "POST",
-        url: backend.url + "utility/insertRelacionamentos",
-        data: {
-            data: insercao
-        },
-        success: function (response) {
-            console.log(response);
-            cleanAll();
-            showNotification("Doença cadastrada com sucesso!", "success");
-            $('.page-loader-wrapper').fadeOut();
-        },
-        error: function (error) {
-            console.log(error);
-            $('#errorModal').find('.modal-body').html("Error ao inserir doença - relacionamentos. Contate o desenvolvedor!");
-            $('.page-loader-wrapper').fadeOut();
-            $('#errorModal').modal('show');
-        }
+    
+    let queryRel = buildQueryRelacionamento(insercao);
+    $.each(queryRel, (key, value) => {
+        $.ajax({
+            type: "POST",
+            url: backend.url + "utility/insertByQuery",
+            data: {
+                query: value
+            },
+            success: function (response) {
+                console.log(response);
+                if (key >= queryRel.length-1) {
+                    cleanAll();
+                    showNotification("Doença cadastrada com sucesso!", "success");
+                    $('.page-loader-wrapper').fadeOut();
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                $('#errorModal').find('.modal-body').html("Error ao inserir doença - relacionamentos. Contate o desenvolvedor!");
+                $('.page-loader-wrapper').fadeOut();
+                $('#errorModal').modal('show');
+            }
+        });
     });
+
+
 }
 
 var add = function (e) {
@@ -505,27 +513,56 @@ var showNotification = function (text, state) {
     $.notify({
         message: text
     }, {
-        type: color,
-        allow_dismiss: true,
-        newest_on_top: true,
-        timer: 1000,
-        placement: {
-            from: "top",
-            align: "center"
-        },
-        animate: {
-            enter: "animated fadeInDown",
-            exit: "animated fadeOutUp"
-        },
-        template: '<div data-notify="container" class="bootstrap-notify-container alert alert-dismissible {0} ' + (true ? "p-r-35" : "") + '" role="alert">' +
-            '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-            '<span data-notify="icon"></span> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-    });
+            type: color,
+            allow_dismiss: true,
+            newest_on_top: true,
+            timer: 1000,
+            placement: {
+                from: "top",
+                align: "center"
+            },
+            animate: {
+                enter: "animated fadeInDown",
+                exit: "animated fadeOutUp"
+            },
+            template: '<div data-notify="container" class="bootstrap-notify-container alert alert-dismissible {0} ' + (true ? "p-r-35" : "") + '" role="alert">' +
+                '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+                '<span data-notify="icon"></span> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+        });
+}
+
+function buildQueryDoenca(atributos, values) {
+    var q = "INSERT INTO doenca (";
+    for (var element of atributos)
+        q += element + ",";
+    q = q.substring(0, q.length - 1);
+    q += ") VALUES (";
+    for (element of values)
+        if (element.type == "string")
+            q += "\'" + element.value + "\',";
+        else
+            q += element.value + ",";
+    q = q.substring(0, q.length - 1);
+    q += ")";
+
+    return q;
+}
+
+function buildQueryRelacionamento(data) {
+    var queries = [];
+    for (var element of data) {
+        var tabela = element.tabela[0].toUpperCase() + element.tabela.substring(1, element.tabela.length);
+        for (var elemento of element.id) {
+            queries.push("INSERT INTO doenca" + tabela + "(idDoenca, id" + tabela + ") VALUES (" + element.idDoenca + "," + elemento + ")");
+        }
+    }
+
+    return queries;
 }
