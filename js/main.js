@@ -326,16 +326,18 @@ var acentuacao = function (table) {
             return "Tipo";
         case "insercao":
             return "Inserção";
-        case "flgDor":
+        case "dor":
             return "Dor";
         case "comeco":
             return "Começo";
-        case "flgRemovida":
+        case "removida":
             return "Pode ser removida?";
-        case "flgFumo":
+        case "fumo":
             return "Fumo";
-        case "flgAlcool":
+        case "alcool":
             return "Àlcool";
+        case "conduta":
+            return "Conduta";
 
     }
 }
