@@ -1,3 +1,7 @@
+html, body {
+    height: 100%;
+}
+
 #cadastro {
     padding: 50px 0;
 }
@@ -557,4 +561,20 @@
 .error{
     color: red;
     border-color: red;
+}
+
+.pt50{
+    padding-top: 50px;
+}
+
+.hfull{
+    height: 100%;
+}
+
+.bt-cadastro, .bt-remover{
+    width: 150px;
+}
+
+.mauto{
+    margin: auto;
 }
