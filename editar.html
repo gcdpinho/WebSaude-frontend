@@ -11,6 +11,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/animate.min.css" rel="stylesheet">
     <link href="plugins/bootstrap-selector/bootstrap-select.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="plugins/jquery-datatable/css/jquery.dataTables.min.css" />
     <link href="css/style.css" rel="stylesheet">
     <link href="css/custom.css" rel="stylesheet">
 
@@ -18,13 +19,16 @@
 </head>
 
 <body>
-    <div class="container hfull">
-        <div class="row hfull v-center">
-            <div class="mauto">
-                <button class="btn btn-primary btn-lg bt-cadastro">Cadastro</button>
-                <button class="btn btn-secondary btn-lg bt-remover">Editar/Remover</button>
-            </div>
-        </div>
+    <div class="container">
+        <table id="table-doencas" class="display hfull">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nome Doença</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+        </table>
     </div>
 
     <script src="js/jquery.js"></script>
@@ -32,7 +36,8 @@
     <script src="plugins/bootstrap-selector/bootstrap-select.js"></script>
     <script src="plugins/bootstrap-notify/bootstrap-notify.js"></script>
     <script src="plugins/bootstrap-notify/bootstrap-notify.js"></script>
-    <script src="js/index.js"></script>
+    <script src="plugins/jquery-datatable/js/jquery.dataTables.min.js"></script>
+    <script src="js/editar.js"></script>
 </body>
 
 </html>
