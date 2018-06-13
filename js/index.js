@@ -3,5 +3,5 @@ $(".bt-cadastro").click(() => {
 });
 
 $(".bt-remover").click(() => {
-    location.href = "remover.html";
+    location.href = "editar.html";
 });

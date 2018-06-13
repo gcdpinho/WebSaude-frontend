@@ -1,15 +1,13 @@
 $(document).ready(function () {
     $.ajax({
         type: "GET",
-        url: "http://localhost:3000/doenca/selectAll",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
+        url: "http://localhost:3000/doenca/getFullDoenca",
         success: function (data) {
             // console.log(data);
+            var tdata = agroupDoenca(data);
+            console.log(tdata);
             $('#table-doencas').DataTable({
-                data: data,
+                data: tdata,
                 responsive: true,
                 bLengthChange: false,
                 bDestroy: true,
@@ -27,9 +25,9 @@ $(document).ready(function () {
                     },
                 },
                 columns: [
-                    { "data": "id" },
-                    { "data": "nome" },
-                    { "data": "tipo" }
+                    { "data": "doenca.id" },
+                    { "data": "doenca.nome" },
+                    { "data": "doenca.tipo" }
                 ]
             });
         },

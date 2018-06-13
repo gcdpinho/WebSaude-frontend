@@ -578,3 +578,11 @@ html, body {
 .mauto{
     margin: auto;
 }
+
+.wfull{
+    width: 100% !important;
+}
+
+div#table-doencas_wrapper{
+    width: 100%;
+}
